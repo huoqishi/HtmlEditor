@@ -1,0 +1,113 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>MyIndex</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        .editor {
+            background-color: #1e1e1e;
+            color: #b11c57;
+            cursor: text;
+            height: 500px;
+            width: 100%;
+        }
+
+        .cursor {
+            /*background:url("/assets/img/iconfont-shuxian.svg") no-repeat;*/
+            width:2px;
+            height:20px;
+            background-size:2px 20px;
+            color: #fff;
+            display:inline-block;
+            font-size:20px;
+        }
+        .val{
+            width:10px;
+            height:10px;
+            display:inline-block;
+            visibility:visible;
+            font-size:20px;
+            font-family:Consolas;
+            font-style:italic;
+            margin-right:2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="editor">
+        <span class="cursor">|</span>
+    </div>
+</body>
+</html>
+<script src="~/Scripts/jquery-2.1.3.js"></script>
+<script>
+    //获取元素的纵坐标 
+    function getTop(e) {
+        var offset = e.offsetTop;
+        if (e.offsetParent != null) offset += getTop(e.offsetParent);
+        return offset;
+    }
+    //获取元素的横坐标 
+    function getLeft(e) {
+        var offset = e.offsetLeft;
+        if (e.offsetParent != null) offset += getLeft(e.offsetParent);
+        return offset;
+    }
+
+    function Cursor() {
+        this.display = true;
+        this.hz = 500;
+        this.top=20;
+    }
+    var hz = new Cursor();
+    $('.cursor').css('top', 0);
+    setInterval(function () {
+        if (hz.display) {
+            $('.cursor').css('visibility', 'visible');
+            hz.display = false;
+        } else {
+            $('.cursor').css('visibility', 'hidden');
+            hz.display = true;
+        }
+    }, hz.hz);
+    $(".editor").attr("tabindex", 0);
+    $(".editor").focus();
+    $('.editor').keypress(function (e) {
+        var event = e || window.event || arguments.callee.caller.arguments[0];
+        var temp = $("<span class='val'>" + String.fromCharCode(event.keyCode).toLowerCase() + "</span>");
+        var left = getLeft(temp) + 5;
+        var top=0;
+        if (event.keyCode==32) {
+            temp = $("<span class='val'>&nbsp</span>");
+        }
+        if (event.keyCode == 13) {
+            temp = $("<br>");
+            top=$('.cursor').css('top', $('.cursor').offset().top + hz.top);
+            left = 0; //$('.cursor').offset().left
+        }
+        if (event.keyCode==8) {
+            
+        }
+        if (event.keyCode == 35) {
+            alert();
+            $('.cursor').insertAfter($('.cursor').next('br')); return;
+        }
+        alert(event.keyCode);
+        $('.cursor').after(temp);
+        //$('.cursor').css('left', left + 'px');
+        $('.cursor').insertAfter(temp);
+        $('.val').click(function () {
+            $('.cursor').insertBefore($(this)).css('display', 'inline-block');
+            $(this).prev().css('margin-right', '0');
+        });
+    });
+</script>
